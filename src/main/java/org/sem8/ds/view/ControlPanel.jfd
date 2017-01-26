@@ -1,0 +1,172 @@
+JFDML JFormDesigner: "5.2.5.1.342" Java: "1.8.0_112-release" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {seq l {space :::x, par l:::p {comp jPanel2:::::x, comp jPanel1:::::x, comp jPanel4:::::x}, space :::p, par l {comp jPanel3:::p::p, comp jScrollPane1:::p:291:p}}}"
+			"$verticalGroup": "par l {seq {space s:::p, par l:::p {seq t {comp jPanel1:::::x, space :::p, comp jPanel4:::p::p}, comp jPanel3:::p::p}, space :::p, par l {comp jPanel2:::::x, comp jScrollPane1:::::x}, space :::p}}"
+		} ) {
+			name: "this"
+			"defaultCloseOperation": 3
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {seq {par l {seq t {par l {comp jLabel3:::p::p, comp jLabel4:::p::p}, space ::39:x, comp txtName:::p:141:p}, seq t {space :0:0:x, comp txtIP:::p:141:p}, seq t {comp jLabel5:::p::p, space :::x, comp txtPort:::p:141:p}}, space :p:93:p, par l:::p {comp Initialize:::::x, comp jButton6::::85:x}, space :::p}}"
+				"$verticalGroup": "par l {seq l {space :p:41:p, par b {comp jLabel4::b:p::p, comp txtName::b:p::p}, space :::p, par b {comp jLabel3::b:p::p, comp txtIP::b:p::p, comp Initialize::b:p::p}, space :::p, par b {comp txtPort::b:p::p, comp jLabel5::b:p::p}, space ::19:x}, seq t {space :::x, comp jButton6:::p::p, space :::p}}"
+			} ) {
+				name: "jPanel1"
+				"border": new javax.swing.border.TitledBorder( null, "Initialization", 4, 0, null, new java.awt.Color( 51, 51, 255, 255 ) )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "Initialize"
+					"text": "Register"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "InitializeActionPerformed", true ) )
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "jLabel4"
+					"text": "User Name"
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "txtName"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "jLabel3"
+					"text": "IP"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "jLabel5"
+					"text": "Port "
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "txtIP"
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "txtPort"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "jButton6"
+					"text": "Unregister"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "jButton6ActionPerformed", true ) )
+				} )
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {seq {space :::p, par l {comp jScrollPane4:::::x, seq {par t:::p {seq l {comp jLabel2:::p::p, space :p:34:p, comp jTextField1:::::x}, comp jComboBox1:::p:219:p}, space :::x, comp jButton1:::p:126:p}}, space :::p}}"
+				"$verticalGroup": "par l {seq l {space :::p, par l {seq {comp jComboBox1:::p::p, space :::x, par b {comp jLabel2::b:p::p, comp jTextField1::b:p::p}}, comp jButton1:::::x}, space u:::p, comp jScrollPane4:::p:92:p, space :::p}}"
+			} ) {
+				name: "jPanel2"
+				"border": new javax.swing.border.TitledBorder( null, "Search Files", 4, 0, null, new java.awt.Color( 51, 51, 255, 255 ) )
+				add( new FormComponent( "javax.swing.JComboBox" ) {
+					name: "jComboBox1"
+					"model": new javax.swing.DefaultComboBoxModel {
+						selectedItem: "Item 1"
+						addElement( "Item 1" )
+						addElement( "Item 2" )
+						addElement( "Item 3" )
+						addElement( "Item 4" )
+					}
+					auxiliary() {
+						"JavaCodeGenerator.typeParameters": "String"
+					}
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "jButton1"
+					"font": new java.awt.Font( "Tahoma", 1, 14 )
+					"text": "Search"
+				} )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "jScrollPane4"
+					add( new FormComponent( "javax.swing.JTextArea" ) {
+						name: "jTextArea1"
+						"columns": 20
+						"rows": 5
+					} )
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "jLabel2"
+					"text": "Max Hop Count :"
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "jTextField1"
+					"text": "5"
+				} )
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {seq l {space :::p, par l {comp jScrollPane2::::0:x, seq {comp jLabel8:::p::p, space ::12:x, comp jButton5:::p:56:p, space u:::p, comp jButton3:::p:71:p}}, space :::p}}"
+				"$verticalGroup": "par l {seq l {space :::p, comp jScrollPane2::::254:x, space :::p, par b {comp jButton5::b:p::p, comp jLabel8::b:p::p, comp jButton3::b:p::p}, space :::p}}"
+			} ) {
+				name: "jPanel3"
+				"border": new javax.swing.border.TitledBorder( null, "Neighbours", 4, 0, null, new java.awt.Color( 51, 51, 255, 255 ) )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "jScrollPane2"
+					add( new FormComponent( "javax.swing.JTable" ) {
+						name: "jTable1"
+						"model": new com.jformdesigner.model.SwingTableModel( new java.util.Vector, new java.util.Vector {
+							add( "IP" )
+							add( "PORT" )
+						}, new java.util.Vector {
+							add( class java.lang.String )
+							add( class java.lang.String )
+						}, new java.util.Vector {
+							add( false )
+							add( false )
+						}, new java.util.Vector {
+							add( null )
+							add( null )
+						} )
+					} )
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "jButton5"
+					"text": "JOIN"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "jButton5ActionPerformed", true ) )
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "jLabel8"
+					"text": "Select node and press join"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "jButton3"
+					"text": "Refresh"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "jButton3ActionPerformed", true ) )
+				} )
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+				"$horizontalGroup": "par l {seq {space :::p, par l {comp jButton4:::::x, seq {comp jLabel6:::p:120:p, space u:::p, comp txtNumFiles:::p:57:p, space :0:0:x}, comp jScrollPane3::t:::x}, space :::p}}"
+				"$verticalGroup": "par l {seq t {par l {comp txtNumFiles:::p::p, comp jLabel6:::p:27:p}, space :::p, comp jButton4:::p::p, space :p:12:p, comp jScrollPane3::::65:x, space :::p}}"
+			} ) {
+				name: "jPanel4"
+				"border": new javax.swing.border.TitledBorder( null, "My files", 4, 0, null, new java.awt.Color( 0, 0, 255, 255 ) )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "jScrollPane3"
+					add( new FormComponent( "javax.swing.JTextArea" ) {
+						name: "myFileList"
+						"columns": 20
+						"rows": 5
+					} )
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "jButton4"
+					"text": "Random Initialize"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "jButton4ActionPerformed", true ) )
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "jButton4ActionPerformed", true ) )
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "txtNumFiles"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "jLabel6"
+					"text": "<html>Number of files<br>3 to 5</html>"
+				} )
+			} )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "jScrollPane1"
+				add( new FormComponent( "javax.swing.JTextArea" ) {
+					name: "messageDisplay"
+					"columns": 20
+					"rows": 5
+				} )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"size": new java.awt.Dimension( 780, 605 )
+			"location": new java.awt.Point( 0, 0 )
+		} )
+	}
+}
