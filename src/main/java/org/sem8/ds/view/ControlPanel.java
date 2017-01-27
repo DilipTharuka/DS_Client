@@ -6,6 +6,9 @@
 package org.sem8.ds.view;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
@@ -17,6 +20,7 @@ import org.sem8.ds.rest.resource.CommonResponseResource;
 import org.sem8.ds.rest.resource.NodeResource;
 import org.sem8.ds.rest.resource.ResponseInterface;
 import org.sem8.ds.services.exception.ServiceException;
+import org.sem8.ds.util.jetty.JettyServer;
 
 /**
  *
@@ -30,6 +34,8 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
     private final Random RAND = new Random();
     private final ArrayList<String> fileList = new ArrayList();
     private final ArrayList<NodeResource> neighbours = new ArrayList();
+
+    private JettyServer jettyServer;
 
     public void displayMessage(String message) {
         messageDisplay.append(message);
@@ -51,20 +57,19 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
         fileList.stream().forEach((str) -> {
             myFileList.append(str + "\n");
         });
-        lblNumberOfFiles.setText(fileList.size()+"");
+        lblNumberOfFiles.setText(fileList.size() + "");
     }
-    
-    public void updateNeighbourTable(){
+
+    public void updateNeighbourTable() {
         model.setRowCount(0);
-        for(NodeResource node : neighbours){
-            Object[] data = new Object[2]; 
+        for (NodeResource node : neighbours) {
+            Object[] data = new Object[2];
             data[0] = node.getIp();
             data[1] = node.getPort();
             model.addRow(data);
-        }   
-       
-    }
+        }
 
+    }
 
     public ControlPanel() {
         initComponents();
@@ -89,7 +94,7 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
         jPanel2 = new javax.swing.JPanel();
         btnSearch = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        txtSearchResult = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
         txtMaxHopCount = new javax.swing.JTextField();
         txtSearch = new javax.swing.JTextField();
@@ -151,7 +156,7 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
                 .addGap(93, 93, 93)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(Register, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(Unregister, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE))
+                    .addComponent(Unregister, javax.swing.GroupLayout.PREFERRED_SIZE, 85, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -188,9 +193,9 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
             }
         });
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane4.setViewportView(jTextArea1);
+        txtSearchResult.setColumns(20);
+        txtSearchResult.setRows(5);
+        jScrollPane4.setViewportView(txtSearchResult);
 
         jLabel2.setText("Max Hop Count :");
 
@@ -374,13 +379,24 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
         try {
             String ip = txtIP.getText();
             int port = Integer.parseInt(txtPort.getText());
+
+            jettyServer = new JettyServer(port);
+            try {
+                jettyServer.startServer();
+            } catch (Exception ex) {
+                Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            jettyServer.jettyPing();
+            NodeClientController clientController = new NodeClientController();
+            clientController.setResponseInterface(this);
             NodeResource nodeResource = new NodeResource(ip, port);
             RegisterResponseResource response = new BootstrapController().register(nodeResource, txtName.getText());
-            for(NodeResource node : response.getNodesList()){
+            System.out.println(response.getNodesList());
+            /*for (NodeResource node : response.getNodesList()) {
                 neighbours.add(node);
                 messageDisplay.append("Registered" + " " + node.getIp() + " " + node.getPort() + "\n");
-            }
-                
+            }*/
+            clientController.setFileList(fileList);
             updateNeighbourTable();
 
         } catch (ServiceException ex) {
@@ -397,15 +413,26 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
             NodeResource nodeResource = new NodeResource(ip, port);
             new BootstrapController().unregister(nodeResource, txtName.getText());
 
-        } catch (ServiceException ex) {
+            Thread.sleep(1000);
+            jettyServer.stopServer();
+        } catch (ServiceException | InterruptedException ex) {
+            Logger.getLogger(ControlPanel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
             Logger.getLogger(ControlPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }//GEN-LAST:event_UnregisterActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        // TODO add your handling code here:
-        new NodeClientController().searchFile(txtSearch.getText(),Integer.parseInt(txtMaxHopCount.getText()));      
+        try {
+            // TODO add your handling code here:
+            if (!txtMaxHopCount.getText().trim().isEmpty()) {
+                new NodeClientController().searchFile(txtSearch.getText(), Integer.parseInt(txtMaxHopCount.getText()));
+            }
+            //messageDisplay.append("/n");
+        } catch (ServiceException ex) {
+            Logger.getLogger(ControlPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnSearchActionPerformed
 
     /**
@@ -461,7 +488,6 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JLabel lblNumberOfFiles;
     private javax.swing.JTextArea messageDisplay;
     private javax.swing.JTextArea myFileList;
@@ -471,25 +497,50 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
     private javax.swing.JTextField txtName;
     private javax.swing.JTextField txtPort;
     private javax.swing.JTextField txtSearch;
+    private javax.swing.JTextArea txtSearchResult;
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void executeRegisterResponse(RegisterResponseResource rrr) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void executeCommonResponse(CommonResponseResource crr) {     
-       messageDisplay.append(crr.getResponseType() + " " + crr.getIp() + " " + crr.getPort() + "\n");
-    }
-
-    @Override
-    public void UpdateRoutingTable(UpdateType ut, NodeResource nr) {
-        //messageDisplay.append(ut + " " + nr.getIp() + " " + nr.getPort() + "\n");
-        if(UpdateType.ADD.equals(ut))
-            neighbours.add(nr);
-        else if(UpdateType.REMOVE.equals(ut))
-            neighbours.remove(nr);
+    public void executeCommonResponse(CommonResponseResource crr) {
+        messageDisplay.append(crr.getResponseType() + " " + crr.getIp() + " " + crr.getPort() + "\n");
+        if (CommonResponseResource.ResponseType.JOINOK.equals(crr.getResponseType())
+                && crr.getErrorCode() == 0) {
+            neighbours.add(new NodeResource(crr.getIp(), crr.getPort()));
+        } else if (CommonResponseResource.ResponseType.LEAVEOK.equals(crr.getResponseType())
+                && crr.getErrorCode() == 0) {
+            neighbours.remove(new NodeResource(crr.getIp(), crr.getPort()));
+        }
         updateNeighbourTable();
+    }
+
+    @Override
+    public void updateRoutingTable(UpdateType ut, NodeResource nr) {
+        messageDisplay.append(ut + " " + nr.getIp() + " " + nr.getPort() + "\n");
+        System.out.println("JOIN");
+        if (UpdateType.JOIN.equals(ut)) {
+            neighbours.add(nr);
+        } else if (UpdateType.LEAVE.equals(ut)) {
+            neighbours.remove(nr);
+        }
+        updateNeighbourTable();
+    }
+
+    @Override
+    public void searchFileResult(Map<String, List<NodeResource>> map) {
+        Iterator<String> keyIt = map.keySet().iterator();
+        while (keyIt.hasNext()) {
+            String temp = keyIt.next();
+            if (!fileList.contains(temp)) {
+                fileList.add(temp);
+            }
+            messageDisplay.append("file : " + temp + "Node List : ");
+            for (NodeResource nodeResource : map.get(temp)) {
+                messageDisplay.append(nodeResource.getIp() + ":" + nodeResource.getPort() + " | ");
+                txtSearchResult.append(temp + " - " + nodeResource.getIp()
+                        + ":" + nodeResource.getPort() + "\n");
+            }
+            updateMyFileList();
+            messageDisplay.append("\n");
+        }
     }
 }
