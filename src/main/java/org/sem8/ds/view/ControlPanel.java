@@ -564,7 +564,7 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
     public void searchFileResult(Map<String, List<NodeResource>> map, int hop) {
         long latency = System.currentTimeMillis() - searchRequestTime;
         Iterator<String> keyIt = map.keySet().iterator();
-        messageDisplay.append("Search Latency : " + latency + " and Find Hop Level : " + hop + "\n");
+        messageDisplay.append("Search Latency : " + latency + "ms and Find Hop Level : " + hop + "\n");
         while (keyIt.hasNext()) {
             String temp = keyIt.next();
             if (!fileList.contains(temp)) {
