@@ -165,9 +165,9 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(67, 67, 67)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(Unregister, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Register, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(Unregister, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
+                    .addComponent(Register, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -558,21 +558,27 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
     }
 
     @Override
-    public void searchFileResult(Map<String, List<NodeResource>> map) {
+    public void searchFileResult(Map<String, List<NodeResource>> map, int hop) {
         Iterator<String> keyIt = map.keySet().iterator();
+        messageDisplay.append("Find Hop Level : " + hop);
         while (keyIt.hasNext()) {
             String temp = keyIt.next();
             if (!fileList.contains(temp)) {
                 fileList.add(temp);
             }
-            messageDisplay.append("file : " + temp + "Node List : ");
+            
+            messageDisplay.append("file : " + temp + " Node List : ");
+            StringBuffer disMsg = new StringBuffer();
             for (NodeResource nodeResource : map.get(temp)) {
-                messageDisplay.append(nodeResource.getIp() + ":" + nodeResource.getPort() + " | ");
+                disMsg.append(nodeResource.getIp() + ":" + nodeResource.getPort() + " | ");
+                //messageDisplay.append(nodeResource.getIp() + ":" + nodeResource.getPort() + " " + hop +" | ");
                 txtSearchResult.append(temp + " - " + nodeResource.getIp()
                         + ":" + nodeResource.getPort() + "\n");
             }
             updateMyFileList();
-            messageDisplay.append("\n");
+            if (!disMsg.toString().trim().isEmpty()) {
+                messageDisplay.append(disMsg.toString().substring(0, disMsg.length() - 2) + "\n");
+            }
         }
     }
 

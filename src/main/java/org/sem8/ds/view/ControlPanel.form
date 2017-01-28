@@ -104,9 +104,9 @@
                       </Group>
                   </Group>
                   <EmptySpace min="-2" pref="67" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="Unregister" min="-2" pref="111" max="-2" attributes="0"/>
-                      <Component id="Register" min="-2" pref="85" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Component id="Unregister" pref="111" max="32767" attributes="0"/>
+                      <Component id="Register" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
