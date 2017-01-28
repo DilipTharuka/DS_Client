@@ -34,6 +34,8 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
     private final Random RAND = new Random();
     private final ArrayList<String> fileList = new ArrayList();
     private final ArrayList<NodeResource> neighbours = new ArrayList();
+    
+    private long searchRequestTime = 0;
 
     private JettyServer jettyServer;
 
@@ -455,6 +457,7 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
         try {
             // TODO add your handling code here:
             if (!txtMaxHopCount.getText().trim().isEmpty()) {
+                searchRequestTime = System.currentTimeMillis();
                 new NodeClientController().searchFile(txtSearch.getText(), Integer.parseInt(txtMaxHopCount.getText()));
             }
             //messageDisplay.append("/n");
@@ -559,14 +562,14 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
 
     @Override
     public void searchFileResult(Map<String, List<NodeResource>> map, int hop) {
+        long latency = System.currentTimeMillis() - searchRequestTime;
         Iterator<String> keyIt = map.keySet().iterator();
-        messageDisplay.append("Find Hop Level : " + hop);
+        messageDisplay.append("Search Latency : " + latency + " and Find Hop Level : " + hop + "\n");
         while (keyIt.hasNext()) {
             String temp = keyIt.next();
             if (!fileList.contains(temp)) {
                 fileList.add(temp);
             }
-            
             messageDisplay.append("file : " + temp + " Node List : ");
             StringBuffer disMsg = new StringBuffer();
             for (NodeResource nodeResource : map.get(temp)) {
