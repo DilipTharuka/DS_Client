@@ -593,5 +593,6 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
     @Override
     public void setTotalMsgCount(int i) {
         txtMsgCount.setText(i+ "");
+        System.out.println(i+"==================================");
     }
 }
