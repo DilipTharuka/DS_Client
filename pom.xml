@@ -32,8 +32,6 @@
     </dependencies>
     <build>
         <finalName>DS_Client</finalName>
-<<<<<<< HEAD
-=======
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -69,6 +67,5 @@
                 </configuration>
             </plugin>
         </plugins>
->>>>>>> 42c554cfa85d35ae465eee56da459a9cac945a64
     </build>
 </project>
