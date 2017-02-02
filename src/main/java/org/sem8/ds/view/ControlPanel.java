@@ -5,6 +5,8 @@
  */
 package org.sem8.ds.view;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -13,20 +15,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import java.util.Random;
+import javax.swing.JFileChooser;
 import org.sem8.ds.client.controller.BootstrapController;
 import org.sem8.ds.client.controller.NodeClientController;
 import org.sem8.ds.client.remote.ResponseInterface;
 import org.sem8.ds.client.resource.RegisterResponseResource;
+import org.sem8.ds.client.resource.SearchStatResource;
 import org.sem8.ds.rest.resource.CommonResponseResource;
 import org.sem8.ds.rest.resource.NodeResource;
 import org.sem8.ds.services.exception.ServiceException;
+import org.sem8.ds.util.SearchQueryReader;
 import org.sem8.ds.util.jetty.JettyServer;
 
 /**
  *
  * @author Lahiru
  */
-public final class ControlPanel extends javax.swing.JFrame implements ResponseInterface{
+public final class ControlPanel extends javax.swing.JFrame implements ResponseInterface {
 
     DefaultTableModel model;
 
@@ -34,7 +39,9 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
     private final Random RAND = new Random();
     private final ArrayList<String> fileList = new ArrayList();
     private final ArrayList<NodeResource> neighbours = new ArrayList();
-    
+
+    private File queryFileName;
+
     private long searchRequestTime = 0;
 
     private JettyServer jettyServer;
@@ -102,6 +109,7 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
         jLabel2 = new javax.swing.JLabel();
         txtMaxHopCount = new javax.swing.JTextField();
         txtSearch = new javax.swing.JTextField();
+        btFileChooser = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         neighbourTable = new javax.swing.JTable();
@@ -115,6 +123,7 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
         messageDisplay = new javax.swing.JTextArea();
         jLabel8 = new javax.swing.JLabel();
         txtMsgCount = new javax.swing.JTextField();
+        btStat = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -217,6 +226,13 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
 
         jLabel2.setText("Max Hop Count :");
 
+        btFileChooser.setText("Choose File");
+        btFileChooser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btFileChooserActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -232,8 +248,10 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
                                 .addGap(34, 34, 34)
                                 .addComponent(txtMaxHopCount, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(txtSearch))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 73, Short.MAX_VALUE)
-                        .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btFileChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -242,7 +260,9 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btFileChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
@@ -316,7 +336,7 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblNumberOfFiles, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -338,6 +358,13 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
 
         jLabel8.setText("Node msg count");
 
+        btStat.setText("Statistic");
+        btStat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btStatActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -350,10 +377,12 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
                         .addContainerGap())
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(txtMsgCount, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(167, 167, 167))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btStat)
+                        .addGap(54, 54, 54))))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -363,7 +392,8 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
-                    .addComponent(txtMsgCount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtMsgCount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btStat))
                 .addContainerGap())
         );
 
@@ -411,6 +441,7 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
             String ip = txtIP.getText();
             int port = Integer.parseInt(txtPort.getText());
 
+            // ip = "192.168.8.103";
             jettyServer = new JettyServer(port);
             try {
                 jettyServer.startServer();
@@ -422,7 +453,7 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
             clientController.setResponseInterface(this);
             NodeResource nodeResource = new NodeResource(ip, port);
             BootstrapController bootstrapController = new BootstrapController();
-            bootstrapController.setBootstrapHostName(txtBootsrapIP.getText());
+            bootstrapController.setBootstrapHostName(txtBootsrapIP.getText()/*"192.168.8.113"*/);
             RegisterResponseResource response = bootstrapController.register(nodeResource, txtName.getText());
             System.out.println(response.getNodesList());
             /*for (NodeResource node : response.getNodesList()) {
@@ -445,7 +476,7 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
             int port = Integer.parseInt(txtPort.getText());
             NodeResource nodeResource = new NodeResource(ip, port);
             BootstrapController bootstrapController = new BootstrapController();
-            bootstrapController.setBootstrapHostName(txtBootsrapIP.getText());  
+            bootstrapController.setBootstrapHostName(txtBootsrapIP.getText());
             bootstrapController.unregister(nodeResource, txtName.getText());
 
             Thread.sleep(1000);
@@ -460,16 +491,55 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         try {
+            System.out.println("query File Name : " + queryFileName);
             // TODO add your handling code here:
             if (!txtMaxHopCount.getText().trim().isEmpty()) {
-                searchRequestTime = System.currentTimeMillis();
-                new NodeClientController().searchFile(txtSearch.getText(), Integer.parseInt(txtMaxHopCount.getText()));
+                if (!txtSearch.getText().trim().isEmpty()) {
+                    searchRequestTime = System.currentTimeMillis();
+                    new NodeClientController().searchFile(txtSearch.getText(), Integer.parseInt(txtMaxHopCount.getText()));
+                } else if (queryFileName != null) {
+                    final List<String> queryList = SearchQueryReader.readQueryFile(queryFileName);
+                    System.out.println("List Size : " + queryList.size());
+                    final int hop = Integer.parseInt(txtMaxHopCount.getText());
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            NodeClientController controller = new NodeClientController();
+                            for (String string : queryList) {
+                                try {
+                                    txtSearch.setText(string);
+                                    controller.searchFile(string, hop);
+                                    Thread.sleep(2000);
+                                } catch (ServiceException ex) {
+                                    Logger.getLogger(ControlPanel.class.getName()).log(Level.SEVERE, null, ex);
+                                } catch (InterruptedException ex) {
+                                    Logger.getLogger(ControlPanel.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            }
+                        }
+                    }).start();
+                }
             }
             //messageDisplay.append("/n");
         } catch (ServiceException ex) {
             Logger.getLogger(ControlPanel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ControlPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void btFileChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btFileChooserActionPerformed
+        JFileChooser fileChooser = new JFileChooser(".");
+        int status = fileChooser.showOpenDialog(ControlPanel.this);
+
+        if (status == JFileChooser.APPROVE_OPTION) {
+            queryFileName = fileChooser.getSelectedFile();
+        }
+    }//GEN-LAST:event_btFileChooserActionPerformed
+
+    private void btStatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btStatActionPerformed
+        SearchStatResource resource = new NodeClientController().getStatistic(txtName.getText());
+    }//GEN-LAST:event_btStatActionPerformed
 
     /**
      * @param args the command line arguments
@@ -509,6 +579,8 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Register;
     private javax.swing.JButton Unregister;
+    private javax.swing.JButton btFileChooser;
+    private javax.swing.JButton btStat;
     private javax.swing.JButton btnSearch;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -541,7 +613,7 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void executeCommonResponse(CommonResponseResource crr) {
+    public synchronized void executeCommonResponse(CommonResponseResource crr) {
         messageDisplay.append(crr.getResponseType() + " " + crr.getIp() + " " + crr.getPort() + "\n");
         if (CommonResponseResource.ResponseType.JOINOK.equals(crr.getResponseType())
                 && crr.getErrorCode() == 0) {
@@ -554,7 +626,7 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
     }
 
     @Override
-    public void updateRoutingTable(UpdateType ut, NodeResource nr) {
+    public synchronized void updateRoutingTable(UpdateType ut, NodeResource nr) {
         messageDisplay.append(ut + " " + nr.getIp() + " " + nr.getPort() + "\n");
         System.out.println("JOIN");
         if (UpdateType.JOIN.equals(ut)) {
@@ -566,7 +638,7 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
     }
 
     @Override
-    public void searchFileResult(Map<String, List<NodeResource>> map, int hop) {
+    public synchronized void searchFileResult(Map<String, List<NodeResource>> map, int hop) {
         long latency = System.currentTimeMillis() - searchRequestTime;
         Iterator<String> keyIt = map.keySet().iterator();
         messageDisplay.append("Search Latency : " + latency + "ms and Find Hop Level : " + hop + "\n");
@@ -591,7 +663,8 @@ public final class ControlPanel extends javax.swing.JFrame implements ResponseIn
     }
 
     @Override
-    public void setTotalMsgCount(int i) {
-        txtMsgCount.setText(i+ "");
+    public synchronized void setTotalMsgCount(int i) {
+        System.out.println("------------------------------- Msg Count : " + i);
+        txtMsgCount.setText(i + "");
     }
 }
